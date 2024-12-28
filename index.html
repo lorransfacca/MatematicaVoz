@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Faça sua Conta!</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<style>
+    .chat-container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#chat-log {
+  height: 300px;
+  overflow-y: scroll;
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #f2f2f2;
+}
+
+.user-message {
+  color: #000;
+  margin-bottom: 10px;
+}
+
+.bot-message {
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.input-container {
+  display: flex;
+  align-items: center;
+}
+
+input[type="text"] {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button {
+  padding: 10px 20px;
+  margin-left: 10px;
+  background-color: #4CAF50;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+</style>
+<body>
+  <div class="chat-container">
+    <h1>* (equivale a x), √ (equivale a &)</h1>
+    <div id="chat-log"></div>
+    <div class="input-container">
+      <input type="text" id="user-input" placeholder="faça sua conta...">
+      <button onclick="sendMessage()">Solve</button>
+    </div>
+  </div>
+  <script>
+    function sendMessage() {
+      var userInput = document.getElementById('user-input').value;
+      var chatLog = document.getElementById('chat-log');
+
+      var userMessage = document.createElement('p');
+      userMessage.classList.add('user-message');
+      userMessage.textContent = userInput;
+      chatLog.appendChild(userMessage);
+
+      var botMessage = document.createElement('p');
+      botMessage.classList.add('bot-message');
+      var botResponse = solveMathProblem(userInput);
+      botMessage.textContent = botResponse;
+      chatLog.appendChild(botMessage);
+
+      speak(botResponse);
+
+      document.getElementById('user-input').value = '';
+
+      chatLog.scrollTop = chatLog.scrollHeight;
+    }
+
+function solveMathProblem(userInput) {
+  try {
+    
+    if (userInput.startsWith('&')) {
+      
+      let number = parseFloat(userInput.slice(1));
+      if (isNaN(number)) {
+        throw new Error("Entrada inválida");
+      }
+      return number ** 0.5;
+    } else {
+      
+      var result = eval(userInput);
+      return result;
+    }
+  } catch (error) {
+    return "Desculpe, não consegui resolver esse problema matemático.";
+  }
+}
+
+    function speak(text) {
+      var utterance = new SpeechSynthesisUtterance(text);
+      var voices = speechSynthesis.getVoices();
+
+      var voice = voices.find(voice => voice.lang === 'pt-BR' && voice.name.includes('Male'));
+
+      if (voice) {
+        utterance.voice = voice;
+      } else {
+        
+        utterance.lang = 'pt-BR';
+      }
+
+      speechSynthesis.speak(utterance);
+    }
+
+    var inputField = document.getElementById('user-input');
+    inputField.addEventListener("keyup", function(event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        sendMessage();
+      }
+    });
+  </script>
+</body>
+</html>
