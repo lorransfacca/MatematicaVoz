@@ -132,15 +132,19 @@
       function speak(text) {
         const utterance = new SpeechSynthesisUtterance(text);
         const voices = speechSynthesis.getVoices();
-  
-        const voice = voices.find(v => v.lang === 'pt-BR' && v.name.includes('Male'));
-        if (voice) {
-          utterance.voice = voice;
-        } else {
-          utterance.lang = 'pt-BR';
-        }
-  
-        speechSynthesis.speak(utterance);
+
+        speechSynthesis.onvoiceschanged = () => {
+          const voices = speechSynthesis.getVoices();
+          const maleVoice = voices.find(v => v.lang === 'pt-BR' && (v.name.includes('Male') || v.gender === 'male'));
+
+          if (maleVoice) {
+            utterance.voice = maleVoice;
+          } else {
+            utterance.lang = 'pt-BR';
+          }
+
+          speechSynthesis.speak(utterance);
+        };
       }
   
       document.getElementById('user-input').addEventListener("keyup", function(event) {
